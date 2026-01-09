@@ -1,11 +1,12 @@
 up: tools deps
+	@mkdir -p supabase/images
 	@npx supabase start
 
 down: tools
 	@npx supabase stop
 
 dev:
-	yarn dev
+	@yarn dev
 
 tools:
 	@command -v yarn >/dev/null 2>&1 || { echo "Error: yarn is not installed."; exit 1; }

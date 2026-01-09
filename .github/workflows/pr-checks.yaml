@@ -35,7 +35,7 @@ jobs:
       - name: Build application
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || 'https://example.supabase.co' }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || 'dummy-key-for-build' }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 'dummy-key-for-build' }}
         run: yarn build
 
       - name: Check build output
