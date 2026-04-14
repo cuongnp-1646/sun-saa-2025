@@ -1,26 +1,206 @@
 @import "tailwindcss";
 
+/* ─── Login Design Tokens ─────────────────────────────────────────────────── */
 :root {
-	--background: #ffffff;
-	--foreground: #171717;
+  /* Colors */
+  --color-bg-page: #00101a;
+  --color-header-bg: rgba(11, 15, 18, 0.8);
+  --color-login-btn: #ffea9e;
+  --color-login-btn-text: #00101a;
+  --color-text-primary: #ffffff;
+  --color-divider: #2e3940;
+  --color-error: #ff6b6b;
+
+  /* Gradients */
+  --gradient-left: linear-gradient(
+    90deg,
+    #00101a 0%,
+    #00101a 25.41%,
+    rgba(0, 16, 26, 0) 100%
+  );
+  --gradient-bottom: linear-gradient(
+    0deg,
+    #00101a 22.48%,
+    rgba(0, 19, 32, 0) 51.74%
+  );
+
+  /* Shadows */
+  --shadow-btn-hover: 0 4px 12px rgba(255, 234, 158, 0.35);
+
+  /* Spacing */
+  --spacing-header-px: 144px;
+  --spacing-header-py: 12px;
+  --spacing-hero-px: 144px;
+  --spacing-hero-py: 96px;
+  --spacing-footer-px: 90px;
+  --spacing-footer-py: 40px;
+  --spacing-btn-px: 24px;
+  --spacing-btn-py: 16px;
+  --spacing-lang-p: 16px;
+  --spacing-hero-gap: 120px;
+  --spacing-login-group-gap: 24px;
+  --spacing-header-gap: 238px;
+
+  /* Border & Radius */
+  --radius-btn: 8px;
+  --radius-lang: 4px;
+  --border-footer: 1px solid #2e3940;
+
+  /* ─── Homepage Design Tokens ────────────────────────────────────────────── */
+  /* Colors */
+  --color-text-primary-gold: #ffea9e;
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-border: #998c5f;
+  --color-btn-primary-bg: #ffea9e;
+  --color-btn-primary-text: #00101a;
+  --color-btn-secondary-bg: transparent;
+  --color-award-card-bg: rgba(26, 33, 38, 1);
+  --color-widget-bg: #ffea9e;
+
+  /* Gradients */
+  --gradient-hero-overlay: linear-gradient(
+    12deg,
+    #00101a 23.7%,
+    rgba(0, 18, 29, 0.46) 38.34%,
+    rgba(0, 19, 32, 0) 48.92%
+  );
+
+  /* Spacing */
+  --spacing-content-px: 144px;
+  --spacing-section-gap: 80px;
+  --spacing-card-gap: 24px;
+  --spacing-nav-gap: 24px;
+  --spacing-header-group-gap: 64px;
+  --spacing-header-controls-gap: 238px;
+  --spacing-cta-gap: 40px;
+  --spacing-hero-section-gap: 16px;
+  --spacing-event-info-gap: 8px;
+  --spacing-awards-section-gap: 80px;
+  --spacing-root-further-px: 104px;
+  --spacing-root-further-py: 120px;
+  --spacing-sunkudos-gap: 10px;
+
+  /* Border & Radius */
+  --radius-nav-btn: 4px;
+  --radius-cta-btn: 8px;
+  --radius-widget: 100px;
+  --radius-award-card-img: 8px;
+  --border-award-card: 0.955px solid #ffea9e;
+  --border-btn-secondary: 1px solid #998c5f;
+
+  /* Shadows */
+  --shadow-card-hover: 0 8px 24px rgba(255, 234, 158, 0.15);
+
+  /* ─── Kudos Live Board Design Tokens ────────────────────────────────────── */
+  /* Colors */
+  --color-bg-card: #00070c;
+  --color-bg-sidebar-hover: rgba(255, 234, 158, 0.1);
+  --color-primary-hover: #fff8e1;
+  --color-primary-bg-hover: rgba(255, 234, 158, 0.4);
+  --color-primary-soft: #fff3c6;
+  --color-text-muted: rgba(219, 209, 193, 1);
+  --color-heart-active: rgba(212, 39, 29, 1);
+  --color-heart-inactive: rgba(153, 153, 153, 1);
+
+  /* Gradients */
+  --gradient-carousel-left: linear-gradient(
+    90deg,
+    #00101a 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  --gradient-carousel-right: linear-gradient(
+    270deg,
+    #00101a 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+
+  /* Borders */
+  --border-card: 1px solid #998c5f;
+  --border-card-primary: 1px solid #ffea9e;
+  --border-card-primary-thick: 4px solid #ffea9e;
+  --border-divider: 1px solid #2e3940;
+
+  /* Radius */
+  --radius-card: 12px;
+  --radius-card-lg: 16px;
+  --radius-pill: 48px;
+  --radius-pill-lg: 64px;
+  --radius-circle: 100px;
+
+  /* Shadows */
+  --shadow-kudos-card: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-kudos-header: 0 2px 8px rgba(0, 0, 0, 0.5);
+
+  /* Spacing */
+  --spacing-kudos-xs: 4px;
+  --spacing-kudos-sm: 8px;
+  --spacing-kudos-md: 16px;
+  --spacing-kudos-lg: 24px;
+  --spacing-kudos-xl: 40px;
+  --spacing-kudos-2xl: 64px;
+  --spacing-kudos-3xl: 80px;
+  --spacing-kudos-4xl: 96px;
+  --spacing-kudos-5xl: 120px;
+  --page-padding-x: 16px;
+
+  /* ─── Viết Kudo Modal Design Tokens ─────────────────────────────────────── */
+  --color-bg-modal: #fff8e1;
+  --color-modal-text: #00101a;
+  --color-modal-placeholder: #999999;
+  --color-required: #cf1322;
+  --color-delete: #d4271d;
+  --color-delete-light: #e46060;
+  --radius-modal: 24px;
+  --radius-send-btn: 8px;
+  --radius-remove-btn: 71px;
+  --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.3);
+
+  /* ─── Countdown Design Tokens ────────────────────────────────────────────── */
+  --color-digit-border: #ffea9e;
+  --radius-digit-card: 12px;
+  --blur-digit-card: blur(24.96px);
+  --spacing-units-gap: 60px;
+  --spacing-digits-gap: 21px;
+  --spacing-title-to-timer: 24px;
+  --gradient-countdown-overlay: linear-gradient(
+    18deg,
+    #00101a 15.48%,
+    rgba(0, 18, 29, 0.46) 52.13%,
+    rgba(0, 19, 32, 0) 63.41%
+  );
 }
+
+/* ─── Global scroll behavior ──────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Digital Numbers Font ────────────────────────────────────────────────── */
+/* TODO: add digital-numbers.woff2 to public/assets/countdown/fonts/ to enable this.
+   Download from: https://www.dafont.com/digital-numbers.font (free for personal use)
+@font-face {
+  font-family: "Digital Numbers";
+  src: url("/assets/countdown/fonts/digital-numbers.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+*/
 
 @theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
+  --font-montserrat: var(--font-montserrat);
+  --font-montserrat-alt: var(--font-montserrat-alt);
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
-	}
+/* ─── Responsive page padding ─────────────────────────────────────────────── */
+@media (min-width: 640px) {
+  :root {
+    --page-padding-x: 36px;
+  }
 }
 
-body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+@media (min-width: 1024px) {
+  :root {
+    --page-padding-x: 144px;
+  }
 }
