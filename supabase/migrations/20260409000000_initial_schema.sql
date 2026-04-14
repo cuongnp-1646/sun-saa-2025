@@ -1,7 +1,8 @@
--- ─── Sun* Kudos Live Board — DB Migration ────────────────────────────────
--- Tables: profiles, departments, hashtags, kudos, kudos_hearts,
---         kudos_hashtags, secret_boxes
--- RLS: enabled on all tables; authenticated users can read all, write their own.
+-- ─── Sun* Kudos — Initial Schema (consolidated) ───────────────────────────────
+-- Merges all incremental migrations into one file for first-deploy.
+-- Tables: departments, profiles, hashtags, campaigns, kudos,
+--         kudos_hearts, kudos_hashtags, secret_boxes
+-- RLS: enabled on all tables; authenticated + anon roles can read public data.
 
 -- Enable UUID extension (idempotent)
 create extension if not exists "pgcrypto";
@@ -19,6 +20,11 @@ alter table departments enable row level security;
 create policy "Anyone authenticated can read departments"
   on departments for select
   to authenticated
+  using (true);
+
+create policy "Anon can read departments"
+  on departments for select
+  to anon
   using (true);
 
 -- ─── profiles ────────────────────────────────────────────────────────────────
@@ -45,6 +51,11 @@ create policy "Users can update their own profile"
   to authenticated
   using (auth.uid() = id)
   with check (auth.uid() = id);
+
+create policy "Anon can read profiles"
+  on profiles for select
+  to anon
+  using (true);
 
 -- Auto-create profile on new user signup
 create or replace function handle_new_user()
@@ -82,22 +93,51 @@ create policy "Anyone authenticated can read hashtags"
   to authenticated
   using (true);
 
+create policy "Anon can read hashtags"
+  on hashtags for select
+  to anon
+  using (true);
+
+-- ─── campaigns ────────────────────────────────────────────────────────────────
+-- Stores award/campaign types displayed in the Viết KUDO modal.
+-- Populated via seed; end users cannot insert.
+
+create table if not exists campaigns (
+  id         uuid        primary key default gen_random_uuid(),
+  name       text        not null unique,  -- e.g. "Award_Top talent"
+  slug       text        not null unique,  -- URL-safe, e.g. "award-top-talent"
+  created_at timestamptz not null default now()
+);
+
+alter table campaigns enable row level security;
+
+create policy "Anyone authenticated can read campaigns"
+  on campaigns for select
+  to authenticated
+  using (true);
+
 -- ─── kudos ───────────────────────────────────────────────────────────────────
 
 create table if not exists kudos (
-  id          uuid primary key default gen_random_uuid(),
-  sender_id   uuid not null references profiles(id) on delete cascade,
-  receiver_id uuid not null references profiles(id) on delete cascade,
-  message     text not null,
-  image_urls  text[] not null default '{}',
-  created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now(),
+  id           uuid primary key default gen_random_uuid(),
+  sender_id    uuid not null references profiles(id) on delete cascade,
+  receiver_id  uuid not null references profiles(id) on delete cascade,
+  message      text not null,
+  image_urls   text[] not null default '{}',
+  is_anonymous boolean not null default false,
+  campaign_id  uuid references campaigns(id) on delete set null,
+  title        text,
+  heart_count  integer not null default 0,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now(),
   constraint kudos_no_self_kudos check (sender_id <> receiver_id)
 );
 
 create index if not exists kudos_sender_id_idx    on kudos(sender_id);
 create index if not exists kudos_receiver_id_idx  on kudos(receiver_id);
 create index if not exists kudos_created_at_idx   on kudos(created_at desc);
+create index if not exists kudos_campaign_id_idx  on kudos(campaign_id);
+create index if not exists kudos_heart_count_idx  on kudos(heart_count desc);
 
 alter table kudos enable row level security;
 
@@ -110,6 +150,11 @@ create policy "Authenticated users can insert their own kudos"
   on kudos for insert
   to authenticated
   with check (auth.uid() = sender_id);
+
+create policy "Anon can read kudos"
+  on kudos for select
+  to anon
+  using (true);
 
 -- ─── kudos_hearts ────────────────────────────────────────────────────────────
 
@@ -141,6 +186,11 @@ create policy "Users can remove their own heart"
   to authenticated
   using (auth.uid() = user_id);
 
+create policy "Anon can read kudos_hearts"
+  on kudos_hearts for select
+  to anon
+  using (true);
+
 -- ─── kudos_hashtags (join table) ─────────────────────────────────────────────
 
 create table if not exists kudos_hashtags (
@@ -167,6 +217,11 @@ create policy "Authenticated users can insert kudos_hashtags"
     )
   );
 
+create policy "Anon can read kudos_hashtags"
+  on kudos_hashtags for select
+  to anon
+  using (true);
+
 -- ─── secret_boxes ────────────────────────────────────────────────────────────
 
 create table if not exists secret_boxes (
@@ -188,7 +243,80 @@ create policy "Users can read their own secret boxes"
 
 -- Admin can insert secret boxes (service role only)
 
+-- ─── Trigger: maintain hashtags.kudos_count ──────────────────────────────────
+
+create or replace function update_hashtag_kudos_count()
+returns trigger language plpgsql security definer as $$
+begin
+  if TG_OP = 'INSERT' then
+    update hashtags
+    set kudos_count = kudos_count + 1
+    where id = NEW.hashtag_id;
+    return NEW;
+  elsif TG_OP = 'DELETE' then
+    update hashtags
+    set kudos_count = greatest(kudos_count - 1, 0)
+    where id = OLD.hashtag_id;
+    return OLD;
+  end if;
+  return null;
+end;
+$$;
+
+drop trigger if exists on_kudos_hashtag_change on kudos_hashtags;
+create trigger on_kudos_hashtag_change
+  after insert or delete
+  on kudos_hashtags
+  for each row
+  execute procedure update_hashtag_kudos_count();
+
+-- ─── Trigger: maintain kudos.heart_count ─────────────────────────────────────
+
+create or replace function update_kudos_heart_count()
+returns trigger language plpgsql security definer as $$
+begin
+  if TG_OP = 'INSERT' then
+    update kudos set heart_count = heart_count + 1 where id = NEW.kudos_id;
+    return NEW;
+  elsif TG_OP = 'DELETE' then
+    update kudos set heart_count = greatest(heart_count - 1, 0) where id = OLD.kudos_id;
+    return OLD;
+  end if;
+  return null;
+end;
+$$;
+
+drop trigger if exists on_kudos_heart_change on kudos_hearts;
+create trigger on_kudos_heart_change
+  after insert or delete
+  on kudos_hearts
+  for each row
+  execute procedure update_kudos_heart_count();
+
+-- ─── Storage: kudos-images RLS ────────────────────────────────────────────────
+-- Bucket is declared in config.toml [storage.buckets.kudos-images].
+
+create policy "Public read kudos images"
+  on storage.objects for select
+  to authenticated
+  using (bucket_id = 'kudos-images');
+
+create policy "Authenticated users can upload kudos images"
+  on storage.objects for insert
+  to authenticated
+  with check (
+    bucket_id = 'kudos-images'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+create policy "Users can delete their own kudos images"
+  on storage.objects for delete
+  to authenticated
+  using (
+    bucket_id = 'kudos-images'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
 -- ─── Realtime publication ─────────────────────────────────────────────────────
 
--- Enable realtime for the kudos table so useKudosFeed hook receives live inserts
 alter publication supabase_realtime add table kudos;
