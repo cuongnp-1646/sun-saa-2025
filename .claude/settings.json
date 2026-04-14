@@ -3,7 +3,10 @@
     "allow": [
       "Bash(python3 -c ':*)",
       "Bash(grep -n \"kudos_count\\\\|hashtag_count\\\\|increment\\\\|trigger\\\\|update.*hashtag\" supabase/migrations/*.sql)",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); deps={**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}; [print\\(k,v\\) for k,v in deps.items\\(\\) if 'tiptap' in k.lower\\(\\) or 'dompurify' in k.lower\\(\\) or 'purify' in k.lower\\(\\)]\")"
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); deps={**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}; [print\\(k,v\\) for k,v in deps.items\\(\\) if 'tiptap' in k.lower\\(\\) or 'dompurify' in k.lower\\(\\) or 'purify' in k.lower\\(\\)]\")",
+      "Bash(supabase --version)",
+      "Bash(supabase status:*)",
+      "Bash(npx supabase:*)"
     ]
   }
 }

@@ -177,7 +177,7 @@ export function KudoHighlightCard({ kudos, isActive = false }: KudoHighlightCard
       </p>
 
       {/* Message content — 3 line max */}
-      <p
+      <div
         className="text-[14px] leading-relaxed"
         style={{
           color: "#FFF",
@@ -186,9 +186,8 @@ export function KudoHighlightCard({ kudos, isActive = false }: KudoHighlightCard
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
         }}
-      >
-        {message}
-      </p>
+        dangerouslySetInnerHTML={{ __html: message }}
+      />
 
       {/* Hashtags — max 5 */}
       {hashtags.length > 0 && (

@@ -5,6 +5,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { KudosHero } from "./KudosHero";
 import { SendKudosInput } from "./SendKudosInput";
 import { SunnerProfileSearch } from "./SunnerProfileSearch";
@@ -45,6 +46,7 @@ export function KudosPage({
   personalStats,
   isAuthenticated,
 }: KudosPageProps) {
+  const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   function openDialog() {
@@ -122,7 +124,10 @@ export function KudosPage({
       <WriteKudoModal
         isOpen={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        onSuccess={() => setDialogOpen(false)}
+        onSuccess={() => {
+          setDialogOpen(false);
+          router.refresh();
+        }}
       />
     </>
   );

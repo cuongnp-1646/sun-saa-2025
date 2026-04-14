@@ -66,7 +66,11 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (kudosError || !kudosRow) {
-    return NextResponse.json({ error: "Failed to create kudos" }, { status: 500 });
+    console.error("[POST /api/kudos] insert error:", kudosError);
+    return NextResponse.json(
+      { error: "Failed to create kudos", detail: kudosError?.message, code: kudosError?.code },
+      { status: 500 }
+    );
   }
 
   if (hashtags.length > 0) {

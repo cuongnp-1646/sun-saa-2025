@@ -133,8 +133,8 @@ export function KudoPostCard({ kudos, actionBar }: KudoPostCardProps) {
       </p>
 
       {/* Message content — 5 line max */}
-      <p
-        className="text-[14px] leading-relaxed"
+      <div
+        className="text-[14px] leading-relaxed kudos-message"
         style={{
           color: "#FFF",
           display: "-webkit-box",
@@ -142,9 +142,8 @@ export function KudoPostCard({ kudos, actionBar }: KudoPostCardProps) {
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
         }}
-      >
-        {message}
-      </p>
+        dangerouslySetInnerHTML={{ __html: message }}
+      />
 
       {/* Image gallery — up to 5 thumbnails */}
       {imageUrls.length > 0 && (
