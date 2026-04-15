@@ -31,15 +31,17 @@ function SenderReceiverInfo({
   return (
     <Link
       href={`${ROUTES.profile}/${sunner.id}`}
-      className="flex items-center gap-2 group"
+      className="flex flex-col items-center gap-1 group shrink-0"
+      style={{ maxWidth: 140 }}
       aria-label={`Xem hồ sơ ${sunner.name}`}
     >
+      {/* Avatar — 64px */}
       <div
         className="relative overflow-hidden rounded-full shrink-0"
         style={{
-          width: 40,
-          height: 40,
-          border: "1px solid var(--color-primary, #FFEA9E)",
+          width: 64,
+          height: 64,
+          border: "2px solid #FFEA9E",
         }}
       >
         {sunner.avatarUrl ? (
@@ -47,32 +49,55 @@ function SenderReceiverInfo({
             src={sunner.avatarUrl}
             alt={sunner.name}
             fill
-            sizes="40px"
+            sizes="64px"
             className="object-cover"
           />
         ) : (
           <span
-            className="flex h-full w-full items-center justify-center text-[11px] font-bold uppercase"
-            style={{ color: "var(--color-primary, #FFEA9E)" }}
+            className="flex h-full w-full items-center justify-center text-[18px] font-bold uppercase"
+            style={{ color: "#3A2A10", background: "#FFEA9E" }}
             aria-hidden="true"
           >
             {sunner.name.charAt(0)}
           </span>
         )}
       </div>
-      <div className="flex flex-col min-w-0">
-        <span
-          className="text-[16px] font-medium leading-tight truncate group-hover:underline"
-          style={{ color: "var(--color-primary, #FFEA9E)" }}
-        >
-          {sunner.name}
-        </span>
-        {sunner.jobTitle && (
-          <span className="text-[12px] truncate" style={{ color: "rgba(219,209,193,1)" }}>
-            {sunner.jobTitle}
-          </span>
-        )}
-      </div>
+
+      {/* Name */}
+      <span
+        className="text-[14px] font-bold text-center leading-tight group-hover:underline line-clamp-2"
+        style={{ color: "#1A1209" }}
+      >
+        {sunner.name}
+      </span>
+
+      {/* Department + badge row */}
+      {(sunner.department || sunner.jobTitle) && (
+        <div className="flex items-center gap-1 flex-wrap justify-center">
+          {sunner.department && (
+            <span
+              className="text-[11px]"
+              style={{ color: "rgba(80, 60, 30, 0.7)" }}
+            >
+              {sunner.department}
+            </span>
+          )}
+          {sunner.department && sunner.jobTitle && (
+            <span style={{ color: "rgba(80,60,30,0.4)", fontSize: 10 }}>•</span>
+          )}
+          {sunner.jobTitle && (
+            <span
+              className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+              style={{
+                background: "#1A1209",
+                color: "#FFEA9E",
+              }}
+            >
+              {sunner.jobTitle}
+            </span>
+          )}
+        </div>
+      )}
     </Link>
   );
 }
@@ -82,122 +107,145 @@ export function KudoPostCard({ kudos, actionBar }: KudoPostCardProps) {
 
   return (
     <article
-      className="flex flex-col gap-3 transition-colors"
+      className="flex flex-col gap-0 transition-colors"
       style={{
-        padding: "24px",
-        background: "var(--color-bg-card, #00070C)",
-        border: "1px solid var(--color-border, #998C5F)",
+        background: "#FFF3C6",
+        border: "1px solid #998C5F",
         borderRadius: "16px",
+        overflow: "hidden",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor =
-          "rgba(255,234,158,0.4)";
+        (e.currentTarget as HTMLElement).style.borderColor = "#FFEA9E";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor =
-          "var(--color-border, #998C5F)";
+        (e.currentTarget as HTMLElement).style.borderColor = "#998C5F";
       }}
     >
-      {/* Category label */}
-      {category && (
-        <div>
-          <span
-            className="text-[11px] font-bold uppercase tracking-widest px-3 py-1"
-            style={{
-              color: "var(--color-primary, #FFEA9E)",
-              border: "1px solid var(--color-primary, #FFEA9E)",
-              borderRadius: "48px",
-            }}
-          >
-            {category}
-          </span>
-        </div>
-      )}
-
-      {/* Sender → Receiver row */}
-      <div className="flex items-center gap-3 flex-wrap">
+      {/* === Sender → Receiver row === */}
+      <div
+        className="flex items-start justify-between"
+        style={{ padding: "20px 24px 16px" }}
+      >
         <SenderReceiverInfo sunner={sender} />
-        <span
-          className="text-[14px] shrink-0"
-          style={{ color: "var(--color-primary, #FFEA9E)" }}
-          aria-hidden="true"
-        >
-          →
-        </span>
+
+        {/* Arrow */}
+        <div className="flex items-center pt-3 shrink-0 px-2" aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/assets/kudos/icons/arrow-sent.svg"
+            alt=""
+            width={24}
+            height={24}
+            style={{
+              filter:
+                "brightness(0) saturate(100%) invert(15%) sepia(20%) saturate(800%) hue-rotate(10deg) brightness(50%)",
+            }}
+          />
+        </div>
+
         <SenderReceiverInfo sunner={receiver} />
       </div>
 
-      {/* Timestamp */}
-      <p className="text-[12px]" style={{ color: "rgba(219,209,193,1)" }}>
-        {formatTimestamp(createdAt)}
-      </p>
+      {/* Divider */}
+      <hr style={{ border: "none", borderTop: "1px solid rgba(80,60,30,0.18)", margin: "0 24px" }} />
 
-      {/* Message content — 5 line max */}
-      <div
-        className="text-[14px] leading-relaxed kudos-message"
-        style={{
-          color: "#FFF",
-          display: "-webkit-box",
-          WebkitLineClamp: 5,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-        }}
-        dangerouslySetInnerHTML={{ __html: message }}
-      />
+      {/* === Content area === */}
+      <div className="flex flex-col gap-3" style={{ padding: "16px 24px 20px" }}>
+        {/* Timestamp */}
+        <p className="text-[12px]" style={{ color: "rgba(80, 60, 30, 0.7)" }}>
+          {formatTimestamp(createdAt)}
+        </p>
 
-      {/* Image gallery — up to 5 thumbnails */}
-      {imageUrls.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
-          {imageUrls.slice(0, 5).map((url, i) => (
-            <div
-              key={i}
-              className="relative shrink-0 overflow-hidden"
-              style={{ width: 80, height: 80, borderRadius: 8 }}
+        {/* Category label */}
+        {category && (
+          <div className="flex items-center justify-center gap-2">
+            <p
+              className="text-[13px] font-bold text-center tracking-wide"
+              style={{ color: "#3A2A10" }}
             >
-              <Image
-                src={url}
-                alt={`Ảnh ${i + 1}`}
-                fill
-                sizes="80px"
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      )}
+              {category.toUpperCase()}
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/assets/kudos/icons/pencil.svg"
+              alt=""
+              width={14}
+              height={14}
+              aria-hidden="true"
+              style={{
+                filter:
+                  "brightness(0) saturate(100%) invert(15%) sepia(20%) saturate(800%) hue-rotate(10deg) brightness(60%)",
+                opacity: 0.5,
+              }}
+            />
+          </div>
+        )}
 
-      {/* Hashtags — max 5 */}
-      {hashtags.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {hashtags.slice(0, 5).map((tag, i) => (
-            <span
-              key={`${tag.id}-${i}`}
-              className="text-[12px]"
-              style={{ color: "var(--color-primary, #FFEA9E)" }}
-            >
-              #{tag.name}
-            </span>
-          ))}
-          {hashtags.length > 5 && (
-            <span className="text-[12px]" style={{ color: "rgba(219,209,193,1)" }}>
-              ...
-            </span>
-          )}
-        </div>
-      )}
+        {/* Message content — in golden box, 5 line max */}
+        <div
+          className="text-[14px] leading-relaxed kudos-message"
+          style={{
+            color: "#1A1209",
+            background: "rgba(255, 234, 158, 0.3)",
+            borderRadius: "8px",
+            padding: "12px 14px",
+            display: "-webkit-box",
+            WebkitLineClamp: 5,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            fontWeight: 500,
+          }}
+          dangerouslySetInnerHTML={{ __html: message }}
+        />
 
-      {/* Action bar — HeartButton + CopyLinkButton + Xem chi tiết */}
-      <div className="flex items-center justify-between pt-1">
-        <div className="flex items-center gap-3">
+        {/* Image gallery — up to 5 thumbnails */}
+        {imageUrls.length > 0 && (
+          <div className="flex gap-2 flex-wrap">
+            {imageUrls.slice(0, 5).map((url, i) => (
+              <div
+                key={i}
+                className="relative shrink-0 overflow-hidden"
+                style={{ width: 80, height: 80, borderRadius: 8 }}
+              >
+                <Image
+                  src={url}
+                  alt={`Ảnh ${i + 1}`}
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Hashtags — max 5 */}
+        {hashtags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {hashtags.slice(0, 5).map((tag, i) => (
+              <span
+                key={`${tag.id}-${i}`}
+                className="text-[12px] font-medium"
+                style={{ color: "#CC4422" }}
+              >
+                #{tag.name}
+              </span>
+            ))}
+            {hashtags.length > 5 && (
+              <span className="text-[12px]" style={{ color: "rgba(80,60,30,0.6)" }}>
+                ...
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Divider above action bar */}
+        <hr style={{ border: "none", borderTop: "1px solid rgba(80,60,30,0.18)", margin: "4px 0 0" }} />
+
+        {/* Action bar — HeartButton on left, CopyLinkButton on right */}
+        <div className="flex items-center justify-between">
           {actionBar}
         </div>
-        <Link
-          href={`${ROUTES.profile}/${kudos.id}`}
-          className="text-[13px] hover:underline"
-          style={{ color: "rgba(219,209,193,1)" }}
-        >
-          Xem chi tiết →
-        </Link>
       </div>
     </article>
   );

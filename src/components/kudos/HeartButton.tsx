@@ -40,7 +40,7 @@ export function HeartButton({
       type="button"
       onClick={handleClick}
       disabled={pending}
-      className="flex items-center gap-1 transition-opacity"
+      className="flex items-center gap-1.5 transition-opacity"
       style={{
         opacity: pending ? 0.6 : 1,
         cursor: pending ? "not-allowed" : "pointer",
@@ -51,6 +51,16 @@ export function HeartButton({
       aria-label={hearted ? "Bỏ thích kudos này" : "Thích kudos này"}
       aria-pressed={hearted}
     >
+      {/* Count shown first, then heart icon — matches design "1.000 ❤" layout */}
+      <span
+        className="text-[14px] font-semibold"
+        style={{
+          color: hearted ? "rgba(212,39,29,1)" : "rgba(100,80,60,0.7)",
+          transition: "color 0.15s ease",
+        }}
+      >
+        {count.toLocaleString("vi-VN")}
+      </span>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/assets/kudos/icons/heart.svg"
@@ -65,15 +75,6 @@ export function HeartButton({
         }}
         aria-hidden="true"
       />
-      <span
-        className="text-[14px]"
-        style={{
-          color: hearted ? "rgba(212,39,29,1)" : "rgba(153,153,153,1)",
-          transition: "color 0.15s ease",
-        }}
-      >
-        {count}
-      </span>
     </button>
   );
 }

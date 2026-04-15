@@ -38,7 +38,8 @@ export function KudosFeed({ initialKudos, isAuthenticated, onAuthRequired }: Kud
           key={k.id}
           kudos={k}
           actionBar={
-            <div className="flex items-center gap-4">
+            // flex justify-between so HeartButton is left, CopyLinkButton is right
+            <div className="flex items-center justify-between w-full">
               <HeartButton
                 kudosId={k.id}
                 initialHearted={k.hasHearted}

@@ -14,7 +14,7 @@ interface KudosCarouselProps {
 }
 
 const CARD_WIDTH = 340;
-const CARD_GAP = 24;
+const CARD_GAP = 16;
 
 export function KudosCarousel({ kudos }: KudosCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -73,6 +73,16 @@ export function KudosCarousel({ kudos }: KudosCarouselProps) {
       )
     : 0;
 
+  const isFirst = activeIndex === 0;
+  const isLast = activeIndex === total - 1;
+
+  // Gold filter for enabled chevron icons
+  const chevronGoldFilter =
+    "brightness(0) saturate(100%) invert(93%) sepia(21%) saturate(454%) hue-rotate(339deg) brightness(107%) contrast(104%)";
+  // Dimmed filter for disabled state
+  const chevronDisabledFilter =
+    "brightness(0) saturate(100%) invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(80%) contrast(80%)";
+
   return (
     <div
       className="flex flex-col items-center gap-6 outline-none"
@@ -81,57 +91,132 @@ export function KudosCarousel({ kudos }: KudosCarouselProps) {
       role="group"
       aria-label="Highlight kudos carousel — use arrow keys to navigate"
     >
-      {/* Overflow-hidden wrapper — measured by ResizeObserver */}
-      <div
-        ref={containerRef}
-        className="relative w-full overflow-hidden"
-        style={{ padding: "8px 0" }}
-      >
-        {/* Left gradient fade */}
-        <div
-          className="pointer-events-none absolute left-0 top-0 bottom-0 z-10"
+      {/* Outer wrapper for absolute-positioned side buttons */}
+      <div className="relative w-full">
+        {/* PREV button — large, absolutely positioned on left */}
+        <button
+          type="button"
+          onClick={onPrev}
+          disabled={isFirst}
+          aria-label="Slide trước"
           style={{
-            width: "120px",
-            background: "linear-gradient(to right, #00101A 0%, transparent 100%)",
+            position: "absolute",
+            left: 16,
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 20,
+            background: "none",
+            border: "none",
+            padding: 8,
+            cursor: isFirst ? "default" : "pointer",
+            opacity: isFirst ? 0.35 : 1,
+            transition: "opacity 200ms",
           }}
-          aria-hidden="true"
-        />
-        {/* Right gradient fade */}
-        <div
-          className="pointer-events-none absolute right-0 top-0 bottom-0 z-10"
-          style={{
-            width: "120px",
-            background: "linear-gradient(to left, #00101A 0%, transparent 100%)",
-          }}
-          aria-hidden="true"
-        />
-
-        {/* Card track */}
-        <div
-          className="flex"
-          style={{
-            gap: CARD_GAP,
-            transform: `translateX(${offset}px)`,
-            transition: "transform 300ms ease-in-out",
-            willChange: "transform",
-          }}
-          role="list"
-          aria-label="Highlight kudos carousel"
         >
-          {kudos.map((k, i) => (
-            <div
-              key={k.id}
-              role="listitem"
-              aria-hidden={i !== activeIndex}
-              style={{
-                opacity: i === activeIndex ? 1 : 0.5,
-                transition: "opacity 300ms ease-in-out",
-                flexShrink: 0,
-              }}
-            >
-              <KudoHighlightCard kudos={k} isActive={i === activeIndex} />
-            </div>
-          ))}
+          {/* chevron-right.svg file actually contains a LEFT-pointing chevron */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/assets/kudos/icons/chevron-right.svg"
+            alt=""
+            width={36}
+            height={36}
+            aria-hidden="true"
+            style={{
+              filter: isFirst ? chevronDisabledFilter : chevronGoldFilter,
+              display: "block",
+            }}
+          />
+        </button>
+
+        {/* NEXT button — large, absolutely positioned on right */}
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={isLast}
+          aria-label="Slide tiếp theo"
+          style={{
+            position: "absolute",
+            right: 16,
+            top: "50%",
+            transform: "translateY(-50%)",
+            zIndex: 20,
+            background: "none",
+            border: "none",
+            padding: 8,
+            cursor: isLast ? "default" : "pointer",
+            opacity: isLast ? 0.35 : 1,
+            transition: "opacity 200ms",
+          }}
+        >
+          {/* chevron-left.svg file actually contains a RIGHT-pointing chevron */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/assets/kudos/icons/chevron-left.svg"
+            alt=""
+            width={36}
+            height={36}
+            aria-hidden="true"
+            style={{
+              filter: isLast ? chevronDisabledFilter : chevronGoldFilter,
+              display: "block",
+            }}
+          />
+        </button>
+
+        {/* Overflow-hidden wrapper — measured by ResizeObserver */}
+        <div
+          ref={containerRef}
+          className="relative w-full overflow-hidden"
+          style={{ padding: "8px 0" }}
+        >
+          {/* Left gradient fade — 50% solid then fade per design token */}
+          <div
+            className="pointer-events-none absolute left-0 top-0 bottom-0 z-10"
+            style={{
+              width: "160px",
+              background:
+                "linear-gradient(90deg, #00101A 50%, rgba(255,255,255,0) 100%)",
+            }}
+            aria-hidden="true"
+          />
+          {/* Right gradient fade — 50% solid then fade per design token */}
+          <div
+            className="pointer-events-none absolute right-0 top-0 bottom-0 z-10"
+            style={{
+              width: "160px",
+              background:
+                "linear-gradient(270deg, #00101A 50%, rgba(255,255,255,0) 100%)",
+            }}
+            aria-hidden="true"
+          />
+
+          {/* Card track */}
+          <div
+            className="flex"
+            style={{
+              gap: CARD_GAP,
+              transform: `translateX(${offset}px)`,
+              transition: "transform 300ms ease-in-out",
+              willChange: "transform",
+            }}
+            role="list"
+            aria-label="Highlight kudos carousel"
+          >
+            {kudos.map((k, i) => (
+              <div
+                key={k.id}
+                role="listitem"
+                aria-hidden={i !== activeIndex}
+                style={{
+                  opacity: i === activeIndex ? 1 : 0.5,
+                  transition: "opacity 300ms ease-in-out",
+                  flexShrink: 0,
+                }}
+              >
+                <KudoHighlightCard kudos={k} isActive={i === activeIndex} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

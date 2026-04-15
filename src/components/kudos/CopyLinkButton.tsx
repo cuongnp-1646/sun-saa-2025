@@ -43,9 +43,10 @@ export function CopyLinkButton({ kudosId }: CopyLinkButtonProps) {
           alt=""
           width={20}
           height={20}
+          style={{ filter: "brightness(0) saturate(100%) opacity(0.6)" }}
           aria-hidden="true"
         />
-        <span className="text-[14px]" style={{ color: "rgba(153,153,153,1)" }}>
+        <span className="text-[14px]" style={{ color: "rgba(80,60,30,0.7)" }}>
           Copy Link
         </span>
       </button>

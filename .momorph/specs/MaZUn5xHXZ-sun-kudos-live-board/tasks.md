@@ -432,3 +432,20 @@ If `get_media_files` returns partial results, re-run for the missing screenId on
 | Phase 11: Polish | T078–T087 | — | 7/11 parallel |
 | Phase 12: Logic Review & DB Connection | T088–T093 | — | 4/6 parallel |
 | **Total** | **87 tasks** | — | **~43 parallelizable** |
+
+## Phase 13: Bug Fix — UI Design Alignment (2026-04-15)
+
+**Purpose**: Fix visual mismatch between current implementation and Figma design (screen MaZUn5xHXZ).
+
+**Triggered by**: User report — Highlight slider cards and All Kudos cards not matching design. Attached screenshot confirmed cards should use light cream background with dark text.
+
+### Bugs found & fixed
+
+- [x] T095 [BUG] Fix KudoHighlightCard background: was dark `#00070C` (design-style.md was incorrect). Figma shows light cream `#FFF3C6` (`--color-primary-soft`). Changed card background to `#FFF3C6` for both active and inactive states | src/components/kudos/KudoHighlightCard.tsx
+- [x] T096 [BUG] Fix KudoHighlightCard text colors: all text was using light colors (gold, white) designed for dark background. Updated name → `#00101A`, message → `#1A1209`, timestamp → `rgba(80,60,30,0.7)`, arrow icon filter → dark | src/components/kudos/KudoHighlightCard.tsx
+- [x] T097 [BUG] Fix KudoHighlightCard category label: was displayed at top of card with gold border. Figma shows it centered below timestamp with no border, plain dark text | src/components/kudos/KudoHighlightCard.tsx
+- [x] T098 [BUG] Fix KudoHighlightCard hashtag color: `#FFEA9E` gold invisible on light background. Changed to `#CC4422` warm orange-red | src/components/kudos/KudoHighlightCard.tsx
+- [x] T099 [BUG] Fix KudoHighlightCard heart count: was showing raw number (e.g. "1000"). Changed to `toLocaleString("vi-VN")` for proper thousand-separator format (e.g. "1.000") | src/components/kudos/KudoHighlightCard.tsx
+- [x] T100 [BUG] Fix KudoPostCard — same background, text color, category placement, hashtag color, and heart count format issues as Highlight card | src/components/kudos/KudoPostCard.tsx
+- [x] T101 [BUG] Fix HeartButton count display: was `{count}` raw number. Changed to `{count.toLocaleString("vi-VN")}` and updated inactive color to warm dark for light-background legibility | src/components/kudos/HeartButton.tsx
+- [x] T102 [BUG] Fix CopyLinkButton on light background: icon was unfiltered (white SVG invisible). Added `brightness(0) opacity(0.6)` filter. Updated "Copy Link" text color to `rgba(80,60,30,0.7)` | src/components/kudos/CopyLinkButton.tsx

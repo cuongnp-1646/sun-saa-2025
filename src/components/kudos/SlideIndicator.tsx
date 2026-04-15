@@ -52,9 +52,10 @@ export function SlideIndicator({
         style={btnStyle(isFirst)}
         aria-label="Slide trước"
       >
+        {/* chevron-right.svg file actually contains a LEFT-pointing chevron (<) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/assets/kudos/icons/chevron-left.svg"
+          src="/assets/kudos/icons/chevron-right.svg"
           alt=""
           width={20}
           height={20}
@@ -78,9 +79,10 @@ export function SlideIndicator({
         style={btnStyle(isLast)}
         aria-label="Slide tiếp theo"
       >
+        {/* chevron-left.svg file actually contains a RIGHT-pointing chevron (>) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/assets/kudos/icons/chevron-right.svg"
+          src="/assets/kudos/icons/chevron-left.svg"
           alt=""
           width={20}
           height={20}
